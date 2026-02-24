@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RPP", "RPP.csproj", "{440DFB94-F415-4AB8-B0BA-113E72CFCF43}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatHasPawsTests", "..\CatHasPawsTests\CatHasPawsTests.csproj", "{560AED6C-E193-4176-AEE9-A1408C1EA4F5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{440DFB94-F415-4AB8-B0BA-113E72CFCF43} = {440DFB94-F415-4AB8-B0BA-113E72CFCF43}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{440DFB94-F415-4AB8-B0BA-113E72CFCF43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{440DFB94-F415-4AB8-B0BA-113E72CFCF43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{440DFB94-F415-4AB8-B0BA-113E72CFCF43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{440DFB94-F415-4AB8-B0BA-113E72CFCF43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{560AED6C-E193-4176-AEE9-A1408C1EA4F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{560AED6C-E193-4176-AEE9-A1408C1EA4F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{560AED6C-E193-4176-AEE9-A1408C1EA4F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{560AED6C-E193-4176-AEE9-A1408C1EA4F5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3BD8ACE8-37BF-4CBF-ACAE-D536179CABC5}
+	EndGlobalSection
+EndGlobal

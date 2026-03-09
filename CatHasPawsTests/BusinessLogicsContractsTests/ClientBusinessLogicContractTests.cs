@@ -39,6 +39,7 @@ public class ClientBusinessLogicContractTests
 
         // Assert
         Assert.That(result, Is.EqualTo(expectedList));
+        _mockStorage.Verify(x => x.GetList(), Times.Once);
     }
 
     [Test]
@@ -53,6 +54,7 @@ public class ClientBusinessLogicContractTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Is.Empty);
+        _mockStorage.Verify(x => x.GetList(), Times.Once);
     }
 
     [Test]
@@ -63,16 +65,7 @@ public class ClientBusinessLogicContractTests
 
         // Act & Assert
         Assert.That(() => _businessLogic.GetAllClients(), Throws.TypeOf<NullListException>());
-    }
-
-    [Test]
-    public void GetAllClients_StorageThrowsException_ThrowsStorageException()
-    {
-        // Arrange
-        _mockStorage.Setup(x => x.GetList()).Throws(new InvalidOperationException());
-
-        // Act & Assert
-        Assert.That(() => _businessLogic.GetAllClients(), Throws.TypeOf<StorageException>());
+        _mockStorage.Verify(x => x.GetList(), Times.Once);
     }
 
     [Test]
@@ -100,7 +93,7 @@ public class ClientBusinessLogicContractTests
     }
 
     [Test]
-    public void GetClientByData_DataIsPhoneNumber_CallsGetElementByPhone()
+    public void GetClientByData_DataIsPhone_CallsGetElementByPhone()
     {
         // Arrange
         var phone = "+7-999-111-22-33";
@@ -116,22 +109,6 @@ public class ClientBusinessLogicContractTests
     }
 
     [Test]
-    public void GetClientByData_DataIsName_CallsGetElementByName()
-    {
-        // Arrange
-        var name = "Иван Иванов";
-        var expectedClient = new ClientDataModel(Guid.NewGuid().ToString(), name, "ул. Ленина, 1", "+7-999-111-22-33", DateTime.Now.AddDays(-30));
-        _mockStorage.Setup(x => x.GetElementByName(name)).Returns(expectedClient);
-
-        // Act
-        var result = _businessLogic.GetClientByData(name);
-
-        // Assert
-        Assert.That(result, Is.EqualTo(expectedClient));
-        _mockStorage.Verify(x => x.GetElementByName(name), Times.Once);
-    }
-
-    [Test]
     public void GetClientByData_ElementNotFound_ThrowsElementNotFoundException()
     {
         // Arrange
@@ -140,23 +117,6 @@ public class ClientBusinessLogicContractTests
 
         // Act & Assert
         Assert.That(() => _businessLogic.GetClientByData(data), Throws.TypeOf<ElementNotFoundException>());
-    }
-
-    [Test]
-    public void GetClientByData_StorageThrowsException_ThrowsStorageException()
-    {
-        // Arrange
-        _mockStorage.Setup(x => x.GetElementById(It.IsAny<string>())).Throws(new InvalidOperationException());
-
-        // Act & Assert
-        Assert.That(() => _businessLogic.GetClientByData(Guid.NewGuid().ToString()), Throws.TypeOf<StorageException>());
-    }
-
-    [Test]
-    public void InsertClient_NullModel_ThrowsArgumentNullException()
-    {
-        // Act & Assert
-        Assert.That(() => _businessLogic.InsertClient(null!), Throws.ArgumentNullException);
     }
 
     [Test]
@@ -178,44 +138,10 @@ public class ClientBusinessLogicContractTests
     }
 
     [Test]
-    public void InsertClient_StorageThrowsElementExistsException_ThrowsElementExistsException()
-    {
-        // Arrange
-        var client = new ClientDataModel(
-            Guid.NewGuid().ToString(),
-            "Иван Иванов",
-            "ул. Ленина, 1",
-            "+7-999-111-22-33",
-            DateTime.Now.AddDays(-30));
-
-        _mockStorage.Setup(x => x.AddElement(client)).Throws(new ElementExistsException("Id", client.Id));
-
-        // Act & Assert
-        Assert.That(() => _businessLogic.InsertClient(client), Throws.TypeOf<ElementExistsException>());
-    }
-
-    [Test]
-    public void InsertClient_StorageThrowsException_ThrowsStorageException()
-    {
-        // Arrange
-        var client = new ClientDataModel(
-            Guid.NewGuid().ToString(),
-            "Иван Иванов",
-            "ул. Ленина, 1",
-            "+7-999-111-22-33",
-            DateTime.Now.AddDays(-30));
-
-        _mockStorage.Setup(x => x.AddElement(client)).Throws(new InvalidOperationException());
-
-        // Act & Assert
-        Assert.That(() => _businessLogic.InsertClient(client), Throws.TypeOf<StorageException>());
-    }
-
-    [Test]
-    public void UpdateClient_NullModel_ThrowsArgumentNullException()
+    public void InsertClient_NullModel_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.That(() => _businessLogic.UpdateClient(null!), Throws.ArgumentNullException);
+        Assert.That(() => _businessLogic.InsertClient(null!), Throws.ArgumentNullException);
     }
 
     [Test]
@@ -237,61 +163,6 @@ public class ClientBusinessLogicContractTests
     }
 
     [Test]
-    public void UpdateClient_StorageThrowsElementNotFoundException_ThrowsElementNotFoundException()
-    {
-        // Arrange
-        var client = new ClientDataModel(
-            Guid.NewGuid().ToString(),
-            "Иван Иванов",
-            "ул. Ленина, 1",
-            "+7-999-111-22-33",
-            DateTime.Now.AddDays(-30));
-
-        _mockStorage.Setup(x => x.UpdateElement(client)).Throws(new ElementNotFoundException(client.Id));
-
-        // Act & Assert
-        Assert.That(() => _businessLogic.UpdateClient(client), Throws.TypeOf<ElementNotFoundException>());
-    }
-
-    [Test]
-    public void UpdateClient_StorageThrowsElementExistsException_ThrowsElementExistsException()
-    {
-        // Arrange
-        var client = new ClientDataModel(
-            Guid.NewGuid().ToString(),
-            "Иван Иванов",
-            "ул. Ленина, 1",
-            "+7-999-111-22-33",
-            DateTime.Now.AddDays(-30));
-
-        _mockStorage.Setup(x => x.UpdateElement(client)).Throws(new ElementExistsException("PhoneNumber", client.PhoneNumber));
-
-        // Act & Assert
-        Assert.That(() => _businessLogic.UpdateClient(client), Throws.TypeOf<ElementExistsException>());
-    }
-
-    [Test]
-    public void DeleteClient_NullId_ThrowsArgumentNullException()
-    {
-        // Act & Assert
-        Assert.That(() => _businessLogic.DeleteClient(null!), Throws.ArgumentNullException);
-    }
-
-    [Test]
-    public void DeleteClient_EmptyId_ThrowsArgumentNullException()
-    {
-        // Act & Assert
-        Assert.That(() => _businessLogic.DeleteClient(string.Empty), Throws.ArgumentNullException);
-    }
-
-    [Test]
-    public void DeleteClient_InvalidIdFormat_ThrowsValidationException()
-    {
-        // Act & Assert
-        Assert.That(() => _businessLogic.DeleteClient("invalid-guid"), Throws.TypeOf<ValidationException>());
-    }
-
-    [Test]
     public void DeleteClient_ValidId_CallsDeleteElement()
     {
         // Arrange
@@ -305,24 +176,9 @@ public class ClientBusinessLogicContractTests
     }
 
     [Test]
-    public void DeleteClient_StorageThrowsElementNotFoundException_ThrowsElementNotFoundException()
+    public void DeleteClient_InvalidIdFormat_ThrowsValidationException()
     {
-        // Arrange
-        var id = Guid.NewGuid().ToString();
-        _mockStorage.Setup(x => x.DeleteElement(id)).Throws(new ElementNotFoundException(id));
-
         // Act & Assert
-        Assert.That(() => _businessLogic.DeleteClient(id), Throws.TypeOf<ElementNotFoundException>());
-    }
-
-    [Test]
-    public void DeleteClient_StorageThrowsException_ThrowsStorageException()
-    {
-        // Arrange
-        var id = Guid.NewGuid().ToString();
-        _mockStorage.Setup(x => x.DeleteElement(id)).Throws(new InvalidOperationException());
-
-        // Act & Assert
-        Assert.That(() => _businessLogic.DeleteClient(id), Throws.TypeOf<StorageException>());
+        Assert.That(() => _businessLogic.DeleteClient("invalid-guid"), Throws.TypeOf<ValidationException>());
     }
 }

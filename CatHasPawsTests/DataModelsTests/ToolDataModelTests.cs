@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using RPP.DataModels;
-using RPP.Exceptions;
+using RPP.Common.Exceptions;
 
 namespace CatHasPawsTests.DataModelsTests;
 

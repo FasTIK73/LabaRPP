@@ -1,5 +1,5 @@
 ﻿using RPP.DataModels;
-using RPP.Exceptions;
+using RPP.Common.Exceptions;
 
 namespace CatHasPawsTests.DataModelsTests;
 

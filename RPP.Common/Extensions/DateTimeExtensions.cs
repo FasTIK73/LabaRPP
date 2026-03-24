@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPP.Extensions;
+namespace RPP.Common.Extensions;
 
 public static class DateTimeExtensions
 {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using RPP.BusinessLogicsContracts;
 using RPP.DataModels;
-using RPP.Exceptions;
-using RPP.Extensions;
+using RPP.Common.Exceptions;
+using RPP.Common.Extensions;
 using RPP.StoragesContracts;
 
 namespace RPP.Implementations;

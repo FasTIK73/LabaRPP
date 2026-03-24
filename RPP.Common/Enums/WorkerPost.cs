@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPP.Enums;
+namespace RPP.Common.Enums;
 
 public enum WorkerPost
 {

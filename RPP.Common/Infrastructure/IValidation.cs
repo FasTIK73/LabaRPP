@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RPP.Infrastructure;
+namespace RPP.Common.Infrastructure;
 
 public interface IValidation
 {

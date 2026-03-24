@@ -2,7 +2,7 @@
 using Moq;
 using RPP.BusinessLogicsContracts;
 using RPP.DataModels;
-using RPP.Exceptions;
+using RPP.Common.Exceptions;
 using RPP.Implementations;
 using RPP.StoragesContracts;
 

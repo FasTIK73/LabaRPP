@@ -1,7 +1,7 @@
-﻿using RPP.Enums;
-using RPP.Exceptions;
-using RPP.Extensions;
-using RPP.Infrastructure;
+﻿using RPP.Common.Enums;
+using RPP.Common.Exceptions;
+using RPP.Common.Extensions;
+using RPP.Common.Infrastructure;
 
 namespace RPP.DataModels;
 
@@ -17,17 +17,9 @@ public class ReportDataModel : IValidation
     public ReportStatus Status { get; private set; }
     public double TotalCost { get; private set; }
 
-    // Единственный конструктор
-    public ReportDataModel(
-        string id,
-        string homeId,
-        string workTypeId,
-        string workerId,
-        string toolId,
-        DateTime workDate,
-        double workVolume,
-        ReportStatus status,
-        double totalCost)
+    public ReportDataModel(string id, string homeId, string workTypeId,
+        string workerId, string toolId, DateTime workDate, double workVolume,
+        ReportStatus status, double totalCost)
     {
         Id = id;
         HomeId = homeId;
@@ -42,54 +34,45 @@ public class ReportDataModel : IValidation
 
     public void Validate()
     {
-        // Проверка Id
         if (Id.IsEmpty())
             throw new ValidationException("Field Id is empty");
 
         if (!Id.IsGuid())
             throw new ValidationException("The value in the field Id is not a unique identifier");
 
-        // Проверка HomeId
         if (HomeId.IsEmpty())
             throw new ValidationException("Field HomeId is empty");
 
         if (!HomeId.IsGuid())
             throw new ValidationException("The value in the field HomeId is not a unique identifier");
 
-        // Проверка WorkTypeId
         if (WorkTypeId.IsEmpty())
             throw new ValidationException("Field WorkTypeId is empty");
 
         if (!WorkTypeId.IsGuid())
             throw new ValidationException("The value in the field WorkTypeId is not a unique identifier");
 
-        // Проверка WorkerId
         if (WorkerId.IsEmpty())
             throw new ValidationException("Field WorkerId is empty");
 
         if (!WorkerId.IsGuid())
             throw new ValidationException("The value in the field WorkerId is not a unique identifier");
 
-        // Проверка ToolId
         if (ToolId.IsEmpty())
             throw new ValidationException("Field ToolId is empty");
 
         if (!ToolId.IsGuid())
             throw new ValidationException("The value in the field ToolId is not a unique identifier");
 
-        // Проверка даты работы
         if (WorkDate > DateTime.Now)
             throw new ValidationException("Work date cannot be in the future");
 
-        // Проверка объема работ
         if (WorkVolume <= 0)
             throw new ValidationException("WorkVolume must be greater than 0");
 
-        // Проверка статуса
         if (Status == ReportStatus.None)
             throw new ValidationException("Field Status is empty");
 
-        // Проверка общей стоимости
         if (TotalCost <= 0)
             throw new ValidationException("TotalCost must be greater than 0");
     }

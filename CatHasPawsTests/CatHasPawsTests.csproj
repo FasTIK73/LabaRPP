@@ -18,12 +18,14 @@
     <PackageReference Include="NUnit.Analyzers" Version="3.9.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageReference Include="AutoMapper" Version="12.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RPP\RPP.csproj" />
     <ProjectReference Include="..\RPP.Common\RPP.Common.csproj" />
     <ProjectReference Include="..\RPP.Database\RPP.Database.csproj" />
+    <ProjectReference Include="..\RPP.WebApi\RPP.WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>

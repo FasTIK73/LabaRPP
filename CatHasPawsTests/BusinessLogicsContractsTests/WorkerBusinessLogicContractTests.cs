@@ -2,8 +2,8 @@
 using Moq;
 using RPP.BusinessLogicsContracts;
 using RPP.DataModels;
-using RPP.Enums;
-using RPP.Exceptions;
+using RPP.Common.Enums;
+using RPP.Common.Exceptions;
 using RPP.Implementations;
 using RPP.StoragesContracts;
 

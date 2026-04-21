@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RPP.DataModels;
-using RPP.Enums;
+using RPP.Common.Enums;
 
 namespace RPP.StoragesContracts;
 

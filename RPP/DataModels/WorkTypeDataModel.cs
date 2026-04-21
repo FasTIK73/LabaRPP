@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
-using RPP.Enums;
-using RPP.Exceptions;
-using RPP.Extensions;
-using RPP.Infrastructure;
-using RPP.Enums;
-using RPP.Extensions;
-using RPP.Infrastructure;
+﻿using RPP.Common.Enums;
+using RPP.Common.Exceptions;
+using RPP.Common.Extensions;
+using RPP.Common.Infrastructure;
 
 namespace RPP.DataModels;
 
@@ -21,8 +11,6 @@ public class WorkTypeDataModel : IValidation
     public string WorkName { get; private set; }
     public MeasurementUnit Unit { get; private set; }
     public double PricePerUnit { get; private set; }
-
-    // Историчность типа 4 - история изменения цены
     public double? PreviousPrice { get; private set; }
     public DateTime? PriceChangeDate { get; private set; }
 
@@ -54,7 +42,6 @@ public class WorkTypeDataModel : IValidation
         if (PricePerUnit <= 0)
             throw new ValidationException("Field PricePerUnit must be greater than 0");
 
-        // Проверка историчности
         if (PreviousPrice.HasValue && PreviousPrice <= 0)
             throw new ValidationException("PreviousPrice must be greater than 0");
 

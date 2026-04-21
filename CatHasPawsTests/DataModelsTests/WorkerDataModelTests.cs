@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RPP.DataModels;
-using RPP.Enums;
-using RPP.Exceptions;
+using RPP.Common.Enums;
+using RPP.Common.Exceptions;
 
 namespace CatHasPawsTests.DataModelsTests;
 

@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
-using RPP.Exceptions;
-using RPP.Extensions;
-using RPP.Infrastructure;
-using RPP.Extensions;
-using RPP.Infrastructure;
+﻿using RPP.Common.Exceptions;
+using RPP.Common.Extensions;
+using RPP.Common.Infrastructure;
 
 namespace RPP.DataModels;
 
@@ -19,8 +10,6 @@ public class ToolDataModel : IValidation
     public string ToolName { get; private set; }
     public string Description { get; private set; }
     public bool IsAvailable { get; private set; }
-
-    // Историчность типа 3 (по названию)
     public string? PreviousToolName { get; private set; }
 
     public ToolDataModel(string id, string toolName, string description,

@@ -6,8 +6,8 @@ using RPP.StoragesContracts;
 using Microsoft.Extensions.Logging;
 using RPP.BusinessLogicsContracts;
 using RPP.DataModels;
-using RPP.Exceptions;
-using RPP.Extensions;
+using RPP.Common.Exceptions;
+using RPP.Common.Extensions;
 using RPP.StoragesContracts;
 using System.Text.RegularExpressions;
 

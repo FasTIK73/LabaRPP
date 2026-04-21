@@ -15,14 +15,10 @@ using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// ========== НАСТРОЙКА ЛОГГИРОВАНИЯ ==========
 builder.Host.UseSerilog((context, config) =>
 {
     config.ReadFrom.Configuration(context.Configuration);
 });
-
-// ========== НАСТРОЙКА АУТЕНТИФИКАЦИИ ==========
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -40,13 +36,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// ========== НАСТРОЙКА SWAGGER ==========
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "RPP API", Version = "v1" });
 
-    // Добавляем поддержку JWT в Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token",
@@ -73,13 +67,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddControllers();
-
-// ========== НАСТРОЙКА БАЗЫ ДАННЫХ ==========
-// Для разработки используем InMemory БД
+//бд
 builder.Services.AddDbContext<CatHasPawsDbContext>(options =>
     options.UseInMemoryDatabase("RPP_Database"));
 
-// ========== РЕГИСТРАЦИЯ ЗАВИСИМОСТЕЙ ==========
 
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>
@@ -126,26 +117,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// ========== ТОКЕН (для тестирования) ==========
-app.MapGet("/login", () =>
-{
-    var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-    var key = Encoding.UTF8.GetBytes("RPP_SuperSecretKey_1234567890_SecretKey_1234567890");
-    var tokenDescriptor = new SecurityTokenDescriptor
-    {
-        Subject = new System.Security.Claims.ClaimsIdentity(new[]
-        {
-            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, "user")
-        }),
-        Expires = DateTime.UtcNow.AddHours(1),
-        Issuer = "RPP_Server",
-        Audience = "RPP_Client",
-        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-    };
-    var token = tokenHandler.CreateToken(tokenDescriptor);
-    return tokenHandler.WriteToken(token);
-});
-
 app.Run();
 
+// Необходимо для тестов
 public partial class Program { }

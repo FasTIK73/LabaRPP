@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RPP.BusinessLogicsContracts;
+using RPP.Common.Infrastructure;
 using RPP.Database;
 using RPP.Database.DatabaseImplementations;
 using RPP.Database.Mappings;
@@ -10,15 +11,20 @@ using RPP.DatabaseImplementations;
 using RPP.Implementations;
 using RPP.StoragesContracts;
 using RPP.WebApi.Adapters;
+using RPP.WebApi.Infrastructure;
 using RPP.WebApi.Mappings;
 using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ========== НАСТРОЙКА ЛОГГИРОВАНИЯ ==========
 builder.Host.UseSerilog((context, config) =>
 {
     config.ReadFrom.Configuration(context.Configuration);
 });
+
+// ========== НАСТРОЙКА АУТЕНТИФИКАЦИИ ==========
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -36,6 +42,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+// ========== НАСТРОЙКА SWAGGER ==========
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -67,10 +74,12 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddControllers();
-//бд
+
+// ========== НАСТРОЙКА БАЗЫ ДАННЫХ ==========
 builder.Services.AddDbContext<CatHasPawsDbContext>(options =>
     options.UseInMemoryDatabase("RPP_Database"));
 
+// ========== РЕГИСТРАЦИЯ ЗАВИСИМОСТЕЙ ==========
 
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>
@@ -86,6 +95,7 @@ builder.Services.AddScoped<IHomeStorageContract, HomeStorageContract>();
 builder.Services.AddScoped<IToolStorageContract, ToolStorageContract>();
 builder.Services.AddScoped<IWorkTypeStorageContract, WorkTypeStorageContract>();
 builder.Services.AddScoped<IReportStorageContract, ReportStorageContract>();
+builder.Services.AddScoped<IPostStorageContract, PostStorageContract>();
 
 // Business Logic
 builder.Services.AddScoped<IClientBusinessLogicContract, ClientBusinessLogicContract>();
@@ -94,6 +104,7 @@ builder.Services.AddScoped<IHomeBusinessLogicContract, HomeBusinessLogicContract
 builder.Services.AddScoped<IToolBusinessLogicContract, ToolBusinessLogicContract>();
 builder.Services.AddScoped<IWorkTypeBusinessLogicContract, WorkTypeBusinessLogicContract>();
 builder.Services.AddScoped<IReportBusinessLogicContract, ReportBusinessLogicContract>();
+builder.Services.AddScoped<IPostBusinessLogicContract, PostBusinessLogicContract>();
 
 // Adapters
 builder.Services.AddScoped<ClientAdapter>();
@@ -102,6 +113,10 @@ builder.Services.AddScoped<HomeAdapter>();
 builder.Services.AddScoped<ToolAdapter>();
 builder.Services.AddScoped<WorkTypeAdapter>();
 builder.Services.AddScoped<ReportAdapter>();
+builder.Services.AddScoped<PostAdapter>();
+
+// ========== НАСТРОЙКИ ДЛЯ 5 ЛАБЫ ==========
+builder.Services.AddSingleton<IConfigurationSalary, ConfigurationSalary>();
 
 var app = builder.Build();
 
@@ -117,7 +132,26 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+// ========== ТОКЕН ==========
+app.MapGet("/login", () =>
+{
+    var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+    var key = Encoding.UTF8.GetBytes("RPP_SuperSecretKey_1234567890_SecretKey_1234567890");
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new System.Security.Claims.ClaimsIdentity(new[]
+        {
+            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, "user")
+        }),
+        Expires = DateTime.UtcNow.AddHours(1),
+        Issuer = "RPP_Server",
+        Audience = "RPP_Client",
+        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+    };
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    return tokenHandler.WriteToken(token);
+});
+
 app.Run();
 
-// Необходимо для тестов
 public partial class Program { }

@@ -38,6 +38,7 @@ public class WorkerEntity
 
     public bool IsDeleted { get; set; } = false;
 
+    // НОВОЕ ПОЛЕ ДЛЯ 5 ЛАБЫ
     public DateTime? DateOfDelete { get; set; }
 
     public ICollection<ReportEntity>? Reports { get; set; }

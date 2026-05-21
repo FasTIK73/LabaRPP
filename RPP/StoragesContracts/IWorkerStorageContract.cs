@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using RPP.Common.Enums;
 using RPP.DataModels;
-using RPP.Common.Enums;
 
 namespace RPP.StoragesContracts;
 
@@ -21,4 +15,7 @@ public interface IWorkerStorageContract
     void AddElement(WorkerDataModel element);
     void UpdateElement(WorkerDataModel element);
     void DeleteElement(string id);
+
+    // НОВЫЙ МЕТОД ДЛЯ 5 ЛАБЫ
+    int GetWorkerTrend(DateTime fromPeriod, DateTime toPeriod);
 }

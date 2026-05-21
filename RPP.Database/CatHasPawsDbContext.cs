@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RPP.Common.Infrastructure.PostConfigurations;
 using RPP.Database.Models;
 
 namespace RPP.Database;
@@ -17,11 +20,21 @@ public class CatHasPawsDbContext : DbContext
     public DbSet<WorkTypeEntity> WorkTypes { get; set; }
     public DbSet<ReportEntity> Reports { get; set; }
 
+    // НОВЫЙ DbSet ДЛЯ 5 ЛАБЫ
+    public DbSet<PostEntity> Posts { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Уникальные индексы
+        // НАСТРОЙКА JSON СЕРИАЛИЗАЦИИ ДЛЯ POST (5 ЛАБА)
+        modelBuilder.Entity<PostEntity>()
+            .Property(x => x.Configuration)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => DeserializePostConfiguration(v)
+            );
+
         modelBuilder.Entity<ClientEntity>().HasIndex(x => x.PhoneNumber).IsUnique();
         modelBuilder.Entity<WorkerEntity>().HasIndex(x => x.PhoneNumber).IsUnique();
         modelBuilder.Entity<WorkerEntity>().HasIndex(x => x.Email).IsUnique();
@@ -29,7 +42,6 @@ public class CatHasPawsDbContext : DbContext
         modelBuilder.Entity<ToolEntity>().HasIndex(x => x.ToolName).IsUnique();
         modelBuilder.Entity<WorkTypeEntity>().HasIndex(x => x.WorkName).IsUnique();
 
-        // Каскадное удаление
         modelBuilder.Entity<HomeEntity>()
             .HasOne(x => x.Client)
             .WithMany(x => x.Homes)
@@ -48,4 +60,16 @@ public class CatHasPawsDbContext : DbContext
             .HasForeignKey(x => x.WorkerId)
             .OnDelete(DeleteBehavior.Restrict);
     }
-}   
+
+    // ДЕСЕРИАЛИЗАЦИЯ JSON ДЛЯ POST (5 ЛАБА)
+    private static PostConfiguration DeserializePostConfiguration(string json)
+    {
+        var obj = JToken.Parse(json);
+        return obj.Value<string>("Type") switch
+        {
+            nameof(CashierPostConfiguration) => JsonConvert.DeserializeObject<CashierPostConfiguration>(json)!,
+            nameof(SupervisorPostConfiguration) => JsonConvert.DeserializeObject<SupervisorPostConfiguration>(json)!,
+            _ => JsonConvert.DeserializeObject<PostConfiguration>(json)!
+        };
+    }
+}

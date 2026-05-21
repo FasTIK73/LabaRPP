@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RPP.DataModels;
-using RPP.Database;
-using RPP.Database.Models;
 using RPP.Common.Enums;
 using RPP.Common.Exceptions;
+using RPP.Database.Models;
 using RPP.StoragesContracts;
 
-namespace RPP.DatabaseImplementations;
+namespace RPP.Database.DatabaseImplementations;
 
 public class WorkerStorageContract : IWorkerStorageContract
 {
@@ -33,7 +26,6 @@ public class WorkerStorageContract : IWorkerStorageContract
             var query = _context.Workers.AsQueryable();
             if (onlyActive)
                 query = query.Where(x => !x.IsDeleted);
-
             var entities = query.ToList();
             return _mapper.Map<List<WorkerDataModel>>(entities);
         }
@@ -50,7 +42,6 @@ public class WorkerStorageContract : IWorkerStorageContract
             var query = _context.Workers.Where(x => x.Post == post);
             if (onlyActive)
                 query = query.Where(x => !x.IsDeleted);
-
             var entities = query.ToList();
             return _mapper.Map<List<WorkerDataModel>>(entities);
         }
@@ -67,7 +58,6 @@ public class WorkerStorageContract : IWorkerStorageContract
             var query = _context.Workers.Where(x => x.BirthDate >= fromDate && x.BirthDate <= toDate);
             if (onlyActive)
                 query = query.Where(x => !x.IsDeleted);
-
             var entities = query.ToList();
             return _mapper.Map<List<WorkerDataModel>>(entities);
         }
@@ -84,7 +74,6 @@ public class WorkerStorageContract : IWorkerStorageContract
             var query = _context.Workers.Where(x => x.HireDate >= fromDate && x.HireDate <= toDate);
             if (onlyActive)
                 query = query.Where(x => !x.IsDeleted);
-
             var entities = query.ToList();
             return _mapper.Map<List<WorkerDataModel>>(entities);
         }
@@ -111,7 +100,7 @@ public class WorkerStorageContract : IWorkerStorageContract
     {
         try
         {
-            var entity = _context.Workers.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+            var entity = _context.Workers.FirstOrDefault(x => x.PhoneNumber == phoneNumber && !x.IsDeleted);
             return entity == null ? null : _mapper.Map<WorkerDataModel>(entity);
         }
         catch (Exception ex)
@@ -124,7 +113,7 @@ public class WorkerStorageContract : IWorkerStorageContract
     {
         try
         {
-            var entity = _context.Workers.FirstOrDefault(x => x.Email == email);
+            var entity = _context.Workers.FirstOrDefault(x => x.Email == email && !x.IsDeleted);
             return entity == null ? null : _mapper.Map<WorkerDataModel>(entity);
         }
         catch (Exception ex)
@@ -199,6 +188,24 @@ public class WorkerStorageContract : IWorkerStorageContract
         catch (ElementNotFoundException)
         {
             throw;
+        }
+        catch (Exception ex)
+        {
+            throw new StorageException(ex);
+        }
+    }
+
+    public int GetWorkerTrend(DateTime fromPeriod, DateTime toPeriod)
+    {
+        try
+        {
+            var countWorkersOnBegining = _context.Workers.Count(x =>
+                x.HireDate < fromPeriod && (!x.IsDeleted || (x.DateOfDelete.HasValue && x.DateOfDelete.Value > fromPeriod)));
+
+            var countWorkersOnEnding = _context.Workers.Count(x =>
+                x.HireDate < toPeriod && (!x.IsDeleted || (x.DateOfDelete.HasValue && x.DateOfDelete.Value > toPeriod)));
+
+            return countWorkersOnEnding - countWorkersOnBegining;
         }
         catch (Exception ex)
         {

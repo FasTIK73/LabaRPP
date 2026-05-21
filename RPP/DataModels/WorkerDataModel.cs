@@ -12,13 +12,14 @@ public class WorkerDataModel : IValidation
     public string PhoneNumber { get; private set; }
     public string Email { get; private set; }
     public WorkerPost Post { get; private set; }
+    public string PostId { get; private set; }
     public DateTime HireDate { get; private set; }
     public DateTime BirthDate { get; private set; }
     public double BaseRate { get; private set; }
     public bool IsDeleted { get; private set; }
 
     public WorkerDataModel(string id, string fullName, string phoneNumber,
-        string email, WorkerPost post, DateTime hireDate, DateTime birthDate,
+        string email, WorkerPost post, string postId, DateTime hireDate, DateTime birthDate,
         double baseRate, bool isDeleted)
     {
         Id = id;
@@ -26,10 +27,19 @@ public class WorkerDataModel : IValidation
         PhoneNumber = phoneNumber;
         Email = email;
         Post = post;
+        PostId = postId;
         HireDate = hireDate;
         BirthDate = birthDate;
         BaseRate = baseRate;
         IsDeleted = isDeleted;
+    }
+
+    // Старый конструктор для обратной совместимости (без postId)
+    public WorkerDataModel(string id, string fullName, string phoneNumber,
+        string email, WorkerPost post, DateTime hireDate, DateTime birthDate,
+        double baseRate, bool isDeleted)
+        : this(id, fullName, phoneNumber, email, post, Guid.NewGuid().ToString(), hireDate, birthDate, baseRate, isDeleted)
+    {
     }
 
     public void Validate()
@@ -57,6 +67,12 @@ public class WorkerDataModel : IValidation
 
         if (Post == WorkerPost.None)
             throw new ValidationException("Field Post is empty");
+
+        if (string.IsNullOrEmpty(PostId))
+            throw new ValidationException("Field PostId is empty");
+
+        if (!PostId.IsGuid())
+            throw new ValidationException("PostId is not a valid GUID");
 
         if (BaseRate <= 0)
             throw new ValidationException("Field BaseRate must be greater than 0");

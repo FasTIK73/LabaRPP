@@ -12,6 +12,7 @@ public class ReportDataModel : IValidation
     public string WorkTypeId { get; private set; }
     public string WorkerId { get; private set; }
     public string ToolId { get; private set; }
+    public string? BuyerId { get; private set; }
     public DateTime WorkDate { get; private set; }
     public double WorkVolume { get; private set; }
     public ReportStatus Status { get; private set; }
@@ -19,7 +20,7 @@ public class ReportDataModel : IValidation
 
     public ReportDataModel(string id, string homeId, string workTypeId,
         string workerId, string toolId, DateTime workDate, double workVolume,
-        ReportStatus status, double totalCost)
+        ReportStatus status, double totalCost, string? buyerId = null)
     {
         Id = id;
         HomeId = homeId;
@@ -30,6 +31,7 @@ public class ReportDataModel : IValidation
         WorkVolume = workVolume;
         Status = status;
         TotalCost = totalCost;
+        BuyerId = buyerId;
     }
 
     public void Validate()

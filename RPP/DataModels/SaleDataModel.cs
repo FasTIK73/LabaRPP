@@ -17,6 +17,10 @@ public class SaleDataModel : IValidation
     public bool IsCancel { get; private set; }
     public List<SaleProductDataModel>? Products { get; private set; }
 
+    // Для отчетов - дополнительная информация
+    public string WorkerFIO { get; set; } = string.Empty;
+    public string BuyerFIO { get; set; } = string.Empty;
+
     public SaleDataModel(string id, string workerId, string? buyerId,
         DiscountType discountType, bool isCancel, List<SaleProductDataModel>? products)
     {
@@ -46,6 +50,16 @@ public class SaleDataModel : IValidation
     {
         Sum = sum;
         Discount = discount;
+    }
+
+    // Конструктор для отчетов с дополнительными данными
+    public SaleDataModel(string id, string workerId, string? buyerId, double sum,
+        DiscountType discountType, double discount, bool isCancel,
+        List<SaleProductDataModel>? products, string workerFIO, string buyerFIO)
+        : this(id, workerId, buyerId, sum, discountType, discount, isCancel, products)
+    {
+        WorkerFIO = workerFIO;
+        BuyerFIO = buyerFIO;
     }
 
     public void Validate()

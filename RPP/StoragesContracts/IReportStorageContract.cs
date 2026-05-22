@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using RPP.DataModels;
+﻿using RPP.DataModels;
 
 namespace RPP.StoragesContracts;
 
@@ -19,4 +13,7 @@ public interface IReportStorageContract
     void AddElement(ReportDataModel element);
     void UpdateElement(ReportDataModel element);
     void DeleteElement(string id);
+
+    // НОВЫЙ МЕТОД ДЛЯ 6 ЛАБЫ
+    List<ReportDataModel> GetList(DateTime? fromDate = null, DateTime? toDate = null, string? workerId = null);
 }

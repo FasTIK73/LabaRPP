@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RPP.DataModels;
-using RPP.Database;
 using RPP.Database.Models;
 using RPP.Common.Exceptions;
 using RPP.StoragesContracts;
 
-namespace RPP.DatabaseImplementations;
+namespace RPP.Database.DatabaseImplementations;
 
 public class ReportStorageContract : IReportStorageContract
 {
@@ -160,6 +153,31 @@ public class ReportStorageContract : IReportStorageContract
         catch (ElementNotFoundException)
         {
             throw;
+        }
+        catch (Exception ex)
+        {
+            throw new StorageException(ex);
+        }
+    }
+
+    // НОВЫЙ МЕТОД ДЛЯ 6 ЛАБЫ
+    public List<ReportDataModel> GetList(DateTime? fromDate = null, DateTime? toDate = null, string? workerId = null)
+    {
+        try
+        {
+            var query = _context.Reports.AsQueryable();
+
+            if (fromDate.HasValue)
+                query = query.Where(x => x.WorkDate >= fromDate.Value);
+
+            if (toDate.HasValue)
+                query = query.Where(x => x.WorkDate <= toDate.Value);
+
+            if (!string.IsNullOrEmpty(workerId))
+                query = query.Where(x => x.WorkerId == workerId);
+
+            var entities = query.ToList();
+            return _mapper.Map<List<ReportDataModel>>(entities);
         }
         catch (Exception ex)
         {

@@ -1,8 +1,5 @@
 ﻿namespace RPP.WebApi.Models.ViewModels;
 
-/// <summary>
-/// Модель для отображения зарплаты работника
-/// </summary>
 public class SalaryViewModel
 {
     public string WorkerId { get; set; } = string.Empty;

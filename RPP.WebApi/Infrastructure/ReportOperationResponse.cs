@@ -10,6 +10,9 @@ public class ReportOperationResponse : OperationResponse
     public static ReportOperationResponse OK(ReportViewModel data)
         => OK<ReportOperationResponse, ReportViewModel>(data);
 
+    public static ReportOperationResponse OK(object data)
+        => OK<ReportOperationResponse, object>(data);
+
     public static ReportOperationResponse NoContent()
         => NoContent<ReportOperationResponse>();
 

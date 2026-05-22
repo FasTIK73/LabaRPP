@@ -1,225 +1,203 @@
 ﻿using Microsoft.Extensions.Logging;
 using RPP.BusinessLogicsContracts;
-using RPP.DataModels;
-using RPP.Common.Enums;
 using RPP.Common.Exceptions;
 using RPP.Common.Extensions;
+using RPP.Common.Enums;
+using RPP.DataModels;
 using RPP.StoragesContracts;
 
 namespace RPP.Implementations;
 
 public class ReportBusinessLogicContract : IReportBusinessLogicContract
 {
-    private readonly ILogger<ReportBusinessLogicContract> _logger;
     private readonly IReportStorageContract _reportStorage;
     private readonly IWorkerStorageContract _workerStorage;
     private readonly IWorkTypeStorageContract _workTypeStorage;
+    private readonly IProductStorageContract _productStorage;
+    private readonly IManufacturerStorageContract _manufacturerStorage;
+    private readonly IPostStorageContract _postStorage;
+    private readonly IBuyerStorageContract _buyerStorage;
+    private readonly ILogger _logger;
 
     public ReportBusinessLogicContract(
         IReportStorageContract reportStorage,
         IWorkerStorageContract workerStorage,
         IWorkTypeStorageContract workTypeStorage,
+        IProductStorageContract productStorage,
+        IManufacturerStorageContract manufacturerStorage,
+        IPostStorageContract postStorage,
+        IBuyerStorageContract buyerStorage,
         ILogger<ReportBusinessLogicContract> logger)
     {
         _reportStorage = reportStorage;
         _workerStorage = workerStorage;
         _workTypeStorage = workTypeStorage;
+        _productStorage = productStorage;
+        _manufacturerStorage = manufacturerStorage;
+        _postStorage = postStorage;
+        _buyerStorage = buyerStorage;
         _logger = logger;
     }
 
-    public List<ReportDataModel> GetAllReports(DateTime? fromDate = null, DateTime? toDate = null)
+    public async Task<List<ReportDataModel>> GetAllReportsAsync(DateTime? fromDate = null, DateTime? toDate = null)
     {
-        _logger.LogInformation("GetAllReports called from: {From} to: {To}", fromDate, toDate);
-
-        if (fromDate.HasValue && toDate.HasValue && fromDate.Value.IsDateNotOlder(toDate.Value))
-            throw new IncorrectDatesException(fromDate.Value, toDate.Value);
-
-        var reports = _reportStorage.GetList(fromDate, toDate);
-        if (reports == null)
-            throw new NullListException();
-
-        return reports;
+        return await Task.Run(() => _reportStorage.GetList(fromDate, toDate) ?? throw new NullListException());
     }
 
-    public List<ReportDataModel> GetReportsByHome(string homeId)
+    public async Task<List<ReportDataModel>> GetReportsByHomeAsync(string homeId)
     {
-        _logger.LogInformation("GetReportsByHome called with homeId: {HomeId}", homeId);
-
-        if (homeId.IsEmpty())
+        if (string.IsNullOrEmpty(homeId))
             throw new ArgumentNullException(nameof(homeId));
-
-        if (!homeId.IsGuid())
-            throw new ValidationException("HomeId is not a unique identifier");
-
-        var reports = _reportStorage.GetListByHome(homeId);
-        if (reports == null)
-            throw new NullListException();
-
-        return reports;
+        return await Task.Run(() => _reportStorage.GetListByHome(homeId) ?? throw new NullListException());
     }
 
-    public List<ReportDataModel> GetReportsByWorker(string workerId)
+    public async Task<List<ReportDataModel>> GetReportsByWorkerAsync(string workerId)
     {
-        _logger.LogInformation("GetReportsByWorker called with workerId: {WorkerId}", workerId);
-
-        if (workerId.IsEmpty())
+        if (string.IsNullOrEmpty(workerId))
             throw new ArgumentNullException(nameof(workerId));
-
-        if (!workerId.IsGuid())
-            throw new ValidationException("WorkerId is not a unique identifier");
-
-        var reports = _reportStorage.GetListByWorker(workerId);
-        if (reports == null)
-            throw new NullListException();
-
-        return reports;
+        return await Task.Run(() => _reportStorage.GetListByWorker(workerId) ?? throw new NullListException());
     }
 
-    public List<ReportDataModel> GetReportsByWorkType(string workTypeId)
+    public async Task<List<ReportDataModel>> GetReportsByWorkTypeAsync(string workTypeId)
     {
-        _logger.LogInformation("GetReportsByWorkType called with workTypeId: {WorkTypeId}", workTypeId);
-
-        if (workTypeId.IsEmpty())
+        if (string.IsNullOrEmpty(workTypeId))
             throw new ArgumentNullException(nameof(workTypeId));
-
-        if (!workTypeId.IsGuid())
-            throw new ValidationException("WorkTypeId is not a unique identifier");
-
-        var reports = _reportStorage.GetListByWorkType(workTypeId);
-        if (reports == null)
-            throw new NullListException();
-
-        return reports;
+        return await Task.Run(() => _reportStorage.GetListByWorkType(workTypeId) ?? throw new NullListException());
     }
 
-    public List<ReportDataModel> GetReportsByTool(string toolId)
+    public async Task<List<ReportDataModel>> GetReportsByToolAsync(string toolId)
     {
-        _logger.LogInformation("GetReportsByTool called with toolId: {ToolId}", toolId);
-
-        if (toolId.IsEmpty())
+        if (string.IsNullOrEmpty(toolId))
             throw new ArgumentNullException(nameof(toolId));
-
-        if (!toolId.IsGuid())
-            throw new ValidationException("ToolId is not a unique identifier");
-
-        var reports = _reportStorage.GetListByTool(toolId);
-        if (reports == null)
-            throw new NullListException();
-
-        return reports;
+        return await Task.Run(() => _reportStorage.GetListByTool(toolId) ?? throw new NullListException());
     }
 
-    public ReportDataModel GetReportById(string id)
+    public async Task<ReportDataModel?> GetReportByIdAsync(string id)
     {
-        _logger.LogInformation("GetReportById called with id: {Id}", id);
-
-        if (id.IsEmpty())
+        if (string.IsNullOrEmpty(id))
             throw new ArgumentNullException(nameof(id));
-
-        if (!id.IsGuid())
-            throw new ValidationException("Id is not a unique identifier");
-
-        var report = _reportStorage.GetElementById(id);
-        return report ?? throw new ElementNotFoundException(id);
+        return await Task.Run(() => _reportStorage.GetElementById(id));
     }
 
-    public void InsertReport(ReportDataModel model)
+    public async Task InsertReportAsync(ReportDataModel model)
     {
-        _logger.LogInformation("InsertReport called");
-
         ArgumentNullException.ThrowIfNull(model);
-
         model.Validate();
-
-        try
-        {
-            _reportStorage.AddElement(model);
-        }
-        catch (Exception ex)
-        {
-            throw new StorageException("Error inserting report", ex);
-        }
+        await Task.Run(() => _reportStorage.AddElement(model));
     }
 
-    public void UpdateReport(ReportDataModel model)
+    public async Task UpdateReportAsync(ReportDataModel model)
     {
-        _logger.LogInformation("UpdateReport called");
-
         ArgumentNullException.ThrowIfNull(model);
-
         model.Validate();
-
-        try
-        {
-            _reportStorage.UpdateElement(model);
-        }
-        catch (Exception ex)
-        {
-            throw new StorageException("Error updating report", ex);
-        }
+        await Task.Run(() => _reportStorage.UpdateElement(model));
     }
 
-    public void CancelReport(string id)
+    public async Task CancelReportAsync(string id)
     {
-        _logger.LogInformation("CancelReport called with id: {Id}", id);
-
-        if (id.IsEmpty())
+        if (string.IsNullOrEmpty(id))
             throw new ArgumentNullException(nameof(id));
-
-        if (!id.IsGuid())
-            throw new ValidationException("Id is not a unique identifier");
-
-        try
-        {
-            _reportStorage.DeleteElement(id);
-        }
-        catch (Exception ex)
-        {
-            throw new StorageException("Error canceling report", ex);
-        }
+        await Task.Run(() => _reportStorage.DeleteElement(id));
     }
 
-    public double CalculateWorkerSalary(string workerId, DateTime fromDate, DateTime toDate)
+    public async Task<double> CalculateWorkerSalaryAsync(string workerId, DateTime fromDate, DateTime toDate)
     {
-        _logger.LogInformation("CalculateWorkerSalary called for worker: {WorkerId} from: {From} to: {To}",
-            workerId, fromDate, toDate);
-
-        if (workerId.IsEmpty())
+        if (string.IsNullOrEmpty(workerId))
             throw new ArgumentNullException(nameof(workerId));
 
-        if (!workerId.IsGuid())
-            throw new ValidationException("WorkerId is not a unique identifier");
+        return await Task.Run(() => CalculateWorkerSalary(workerId, fromDate, toDate));
+    }
 
-        if (fromDate.IsDateNotOlder(toDate))
-            throw new IncorrectDatesException(fromDate, toDate);
-
+    private double CalculateWorkerSalary(string workerId, DateTime fromDate, DateTime toDate)
+    {
         var worker = _workerStorage.GetElementById(workerId);
         if (worker == null)
             throw new ElementNotFoundException(workerId);
 
         var reports = _reportStorage.GetListByWorker(workerId);
-        if (reports == null)
-            return 0;
+        var filteredReports = reports?.Where(r => r.WorkDate >= fromDate && r.WorkDate <= toDate).ToList() ?? new List<ReportDataModel>();
 
-        // Фильтруем отчеты по дате
-        var filteredReports = reports.Where(r => r.WorkDate >= fromDate && r.WorkDate <= toDate).ToList();
-
-        // Расчет зарплаты: базовый оклад + процент от выполненных работ
         double totalSalary = worker.BaseRate;
         double totalWorkCost = filteredReports.Sum(r => r.TotalCost);
 
-        // Процент от работ зависит от должности
         double bonusPercent = worker.Post switch
         {
-            WorkerPost.Master => 0.3,    // 30%
-            WorkerPost.Handyman => 0.2,   // 20%
-            WorkerPost.Foreman => 0.4,    // 40%
-            WorkerPost.Assistant => 0.1,  // 10%
+            WorkerPost.Master => 0.3,
+            WorkerPost.Handyman => 0.2,
+            WorkerPost.Foreman => 0.4,
+            WorkerPost.Assistant => 0.1,
             _ => 0
         };
 
-        totalSalary += totalWorkCost * bonusPercent;
+        return totalSalary + totalWorkCost * bonusPercent;
+    }
 
-        return totalSalary;
+    public async Task<List<(string ManufacturerName, List<ProductDataModel> Products)>> GetProductsGroupedByManufacturerAsync(bool onlyActive = true, string? manufacturerId = null)
+    {
+        var result = await Task.Run(() =>
+        {
+            var products = _productStorage.GetList(onlyActive, manufacturerId) ?? new List<ProductDataModel>();
+            if (!products.Any())
+                return new List<(string, List<ProductDataModel>)>();
+
+            var manufacturers = _manufacturerStorage.GetList() ?? new List<ManufacturerDataModel>();
+            var grouped = products.GroupBy(p => p.ManufacturerId)
+                .Select(g => (
+                    ManufacturerName: manufacturers.FirstOrDefault(m => m.Id == g.Key)?.ManufacturerName ?? "Неизвестный производитель",
+                    Products: g.ToList()
+                ))
+                .OrderBy(x => x.ManufacturerName)
+                .ToList();
+
+            return grouped;
+        });
+
+        return result;
+    }
+
+    public async Task<List<SaleDataModel>> GetSalesForPeriodAsync(DateTime fromDate, DateTime toDate, string? workerId = null)
+    {
+        if (fromDate >= toDate)
+            throw new IncorrectDatesException(fromDate, toDate);
+
+        return await Task.Run(() =>
+        {
+            var reports = _reportStorage.GetList(fromDate, toDate, workerId) ?? new List<ReportDataModel>();
+            var sales = new List<SaleDataModel>();
+
+            foreach (var report in reports)
+            {
+                var worker = _workerStorage.GetElementById(report.WorkerId);
+                var buyer = report.BuyerId != null ? _buyerStorage.GetElementById(report.BuyerId) : null;
+
+                var sale = new SaleDataModel(
+                    report.Id, report.WorkerId, report.BuyerId,
+                    report.TotalCost, DiscountType.None, 0, false, null,
+                    worker?.FullName ?? string.Empty,
+                    buyer?.Name ?? string.Empty
+                );
+                sales.Add(sale);
+            }
+            return sales;
+        });
+    }
+
+    public async Task<List<(WorkerDataModel Worker, double Salary)>> GetSalariesForPeriodAsync(DateTime fromDate, DateTime toDate)
+    {
+        if (fromDate >= toDate)
+            throw new IncorrectDatesException(fromDate, toDate);
+
+        return await Task.Run(() =>
+        {
+            var workers = _workerStorage.GetList(true) ?? new List<WorkerDataModel>();
+            var salaries = new List<(WorkerDataModel, double)>();
+
+            foreach (var worker in workers)
+            {
+                var salary = CalculateWorkerSalary(worker.Id, fromDate, toDate);
+                salaries.Add((worker, salary));
+            }
+            return salaries.OrderByDescending(x => x.Item2).ToList();
+        });
     }
 }

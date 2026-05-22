@@ -10,6 +10,7 @@ public class SaleProductDataModel : IValidation
     public string ProductId { get; private set; }
     public int Count { get; private set; }
     public double Price { get; private set; }
+    public string ProductName { get; set; } = string.Empty;
 
     public SaleProductDataModel(string saleId, string productId, int count, double price)
     {

@@ -13,6 +13,7 @@ using RPP.StoragesContracts;
 using RPP.WebApi.Adapters;
 using RPP.WebApi.Infrastructure;
 using RPP.WebApi.Mappings;
+using RPP.WebApi.Services;
 using Serilog;
 using System.Text;
 
@@ -96,6 +97,9 @@ builder.Services.AddScoped<IToolStorageContract, ToolStorageContract>();
 builder.Services.AddScoped<IWorkTypeStorageContract, WorkTypeStorageContract>();
 builder.Services.AddScoped<IReportStorageContract, ReportStorageContract>();
 builder.Services.AddScoped<IPostStorageContract, PostStorageContract>();
+builder.Services.AddScoped<IBuyerStorageContract, BuyerStorageContract>();
+builder.Services.AddScoped<IProductStorageContract, ProductStorageContract>();
+builder.Services.AddScoped<IManufacturerStorageContract, ManufacturerStorageContract>();
 
 // Business Logic
 builder.Services.AddScoped<IClientBusinessLogicContract, ClientBusinessLogicContract>();
@@ -117,6 +121,9 @@ builder.Services.AddScoped<PostAdapter>();
 
 // ========== НАСТРОЙКИ ДЛЯ 5 ЛАБЫ ==========
 builder.Services.AddSingleton<IConfigurationSalary, ConfigurationSalary>();
+
+// ========== НАСТРОЙКИ ДЛЯ 6 ЛАБЫ ==========
+builder.Services.AddScoped<ReportService>();
 
 var app = builder.Build();
 
